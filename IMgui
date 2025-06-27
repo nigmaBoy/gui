@@ -2021,3 +2021,45 @@ function library:AddWindow(title, options)
 
 	return window_data, Window
 end
+-- 2. Define the code for our new ImageLabel prefab
+local imagePrefabCode = [[
+local ImageLabel = Instance.new("ImageLabel")
+ImageLabel.Name = "ImageLabel"
+ImageLabel.Parent = Prefabs
+ImageLabel.Size = UDim2.new(1, 0, 0, 150)
+ImageLabel.BackgroundColor3 = Color3.fromHex("#1f1f1f")
+ImageLabel.BackgroundTransparency = 0.5
+ImageLabel.ScaleType = Enum.ScaleType.Fit
+]]
+
+-- 3. Define the new AddImage function we want to add to the library
+local addImageFunctionCode = [[
+function tab_data:AddImage(options)
+	options = typeof(options) == "table" and options or {}
+	local image = Prefabs:FindFirstChild("ImageLabel"):Clone()
+	image.Parent = new_tab
+	image.ZIndex = image.ZIndex + (windows * 10)
+	image.Size = options.Size or UDim2.new(1, 0, 0, 150)
+	image.Image = options.Image or ""
+	image.LayoutOrder = options.LayoutOrder or 0
+	return image
+end
+]]
+
+-- 4. Inject our new code into the original source at specific anchor points
+local patchedSource = originalLibrarySource
+-- Inject the prefab definition right after the "Windows" frame is defined
+patchedSource = patchedSource:gsub(
+	'(Windows.Name = "Windows")',
+	'%1\n' .. imagePrefabCode,
+	1
+)
+-- Inject the AddImage function right before the AddLabel function
+patchedSource = patchedSource:gsub(
+	'(function tab_data:AddLabel)',
+	addImageFunctionCode .. '\n%1',
+	1
+)
+
+-- 5. Load the newly patched library
+local library = loadstring(patchedSource .. "\nreturn library")()
