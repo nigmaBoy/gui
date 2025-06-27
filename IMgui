@@ -808,6 +808,16 @@ Windows.BackgroundTransparency = 1
 Windows.Position = UDim2.new(0, 20, 0, 20)
 Windows.Size = UDim2.new(1, 20, 1, -20)
 
+-- V V V PASTE THIS CODE V V V
+
+local ImageLabel = Instance.new("ImageLabel")
+ImageLabel.Name = "ImageLabel"
+ImageLabel.Parent = Prefabs
+ImageLabel.Size = UDim2.new(1, 0, 0, 150)
+ImageLabel.BackgroundColor3 = Color3.fromHex("#1f1f1f")
+ImageLabel.BackgroundTransparency = 0.5
+ImageLabel.ScaleType = Enum.ScaleType.Fit
+
 --[[ Script ]]--
 script.Parent = imgui
 
@@ -2006,6 +2016,19 @@ function library:AddWindow(title, options)
 
 				end
 
+-- V V V PASTE THIS PART HERE V V V
+function tab_data:AddImage(options)
+	options = typeof(options) == "table" and options or {}
+	local image = Prefabs:FindFirstChild("ImageLabel"):Clone()
+	image.Parent = new_tab
+	image.ZIndex = image.ZIndex + (windows * 10)
+	image.Size = options.Size or UDim2.new(1, 0, 0, 150)
+	image.Image = options.Image or ""
+	image.LayoutOrder = options.LayoutOrder or 0
+	return image
+end
+-- ^ ^ ^ END OF SECOND PART ^ ^ ^
+
 				return tab_data, new_tab
 			end
 		end
@@ -2021,28 +2044,3 @@ function library:AddWindow(title, options)
 
 	return window_data, Window
 end
--- 2. Define the code for our new ImageLabel prefab
-local imagePrefabCode = [[
-local ImageLabel = Instance.new("ImageLabel")
-ImageLabel.Name = "ImageLabel"
-ImageLabel.Parent = Prefabs
-ImageLabel.Size = UDim2.new(1, 0, 0, 150)
-ImageLabel.BackgroundColor3 = Color3.fromHex("#1f1f1f")
-ImageLabel.BackgroundTransparency = 0.5
-ImageLabel.ScaleType = Enum.ScaleType.Fit
-]]
-
--- 3. Define the new AddImage function we want to add to the library
-local addImageFunctionCode = [[
-function tab_data:AddImage(options)
-	options = typeof(options) == "table" and options or {}
-	local image = Prefabs:FindFirstChild("ImageLabel"):Clone()
-	image.Parent = new_tab
-	image.ZIndex = image.ZIndex + (windows * 10)
-	image.Size = options.Size or UDim2.new(1, 0, 0, 150)
-	image.Image = options.Image or ""
-	image.LayoutOrder = options.LayoutOrder or 0
-	return image
-end
-]]
-
